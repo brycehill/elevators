@@ -6,13 +6,10 @@ function ElevatorSimulation(elevatorCount, floorCount) {
 
     this.movingElevators = [];
 
-
     for (var i = 0; i < elevatorCount; i++) {
         this.availableElevators.push(Elevator.create())
     }
 }
-
-// Need something to receive the requests for elevators
 
 // get these args from cli or something
 ElevatorSimulation.prototype.openDoor = function(elevator) {
@@ -39,5 +36,17 @@ ElevatorSimulation.prototype.fetchClosest = function(requestedFloor) {
     })
 }
 
+ElevatorSimulation.prototype.setMoving = function(elevator, floor) {
+    this.movingElevators.push({
+        elevator: elevator,
+        floor: floor
+    })
+}
 
-module.exports = ElevatorSimulation;
+
+module.exports = {
+    ElevatorSimulation,
+    create: function(elevatorCount, floorCount) {
+        return new ElevatorSimulation(elevatorCount, floorCount);
+    }
+}
