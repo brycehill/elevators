@@ -6,20 +6,22 @@ function Elevator() {
     this.isMoving = false;
     this.occupied = false;
     this.tripCount = 0;
-    this.passedFloors;
-    this.maintenanceMode;
+    this.passedFloors = 0;
+    this.maintenanceMode = false;
 }
 
-Elevator.prototype.goTo = function(requestedFloor, currentFloor) {
+Elevator.prototype.goTo = function(requestedFloor) {
     this.isMoving = true;
     // I guess we assume it's occupied if it's moving?
     this.occupied = true;
-    this.destination = floor;
-    emitter.emit('moving', this, floor);
+    this.destination = requestedFloor;
+    emitter.emit('moving', this, requestedFloor);
 }
 
 Elevator.prototype.stop = function(currentFloor) {
     this.currentFloor = currentFloor;
+    this.passedFloors++;
+
     if (currentFloor === this.destination) {
         this.isMoving = false;
         this.tripCount++;
