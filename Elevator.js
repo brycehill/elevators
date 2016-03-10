@@ -17,6 +17,7 @@ util.inherits(Elevator, EventEmitter);
 Elevator.prototype.goTo = function(floor) {
     this.isMoving = true;
     this.tripCount++;
+    this.emit('moving', this, floor);
 }
 
 Elevator.prototype.isOpeningDoor = function() {
