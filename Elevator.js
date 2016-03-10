@@ -10,8 +10,10 @@ function Elevator() {
     this.maintenanceMode;
 }
 
-Elevator.prototype.goTo = function(floor) {
+Elevator.prototype.goTo = function(requestedFloor, currentFloor) {
     this.isMoving = true;
+    // I guess we assume it's occupied if it's moving?
+    this.occupied = true;
     this.destination = floor;
     emitter.emit('moving', this, floor);
 }

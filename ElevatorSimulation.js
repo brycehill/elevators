@@ -30,13 +30,39 @@ ElevatorSimulation.prototype.closeDoor = function(elevator) {
 ElevatorSimulation.prototype.fetchClosest = function(requestedFloor) {
     // loop through available elevators and find the elevator
     // that is closest to `requestedFloor` that is not moving.
-    var this.availableElevators.filter(function(elevator) {
-        if (elevator.isMoving || elevator.maintenanceMode) {
-            return false;
+    // var closest = this.availableElevators.reduce(function(elevator) {
+    //     // unoccupied on requested floor
+    //     if (!elevator.isOccupied || elevator.isMoving || elevator.maintenanceMode) {
+    //         return false;
+    //     } else {
+    //         // elevator.currentFloor
+    //     }
+    // }, {});
+
+    // I doubt I'll get this right with the time left.
+    // Would definitely want some tests too as it's pretty hairy.
+    var closest;
+    for (var i = 0; i < this.availableElevators.length; i++) {
+        var elevator = this.availableElevators[i];
+        if (!elevator.isOccupied && elevator.currentFloor === requestedFloor) {
+            closest = elevator;
+            break;
+        } else if (elevator.isOccupied) {
+            // check moving elevators for closest occupied
+            var max = this.floorCount;
+            this.movingElevators.forEach(function(movingElevator) {
+                var diff = Math.abs(movingElevator.currentFloor - requestedFloor);
+                if (diff < max) {
+                    closest = movingElevator;
+                }
+            });
         } else {
-            // elevator.currentFloor
+            // Find closest unoccupied
+            closest = elevator;
+            break;
         }
-    })
+    }
+    return closest;
 }
 
 ElevatorSimulation.prototype.setMoving = function(elevator, requestedFloor) {
@@ -44,10 +70,15 @@ ElevatorSimulation.prototype.setMoving = function(elevator, requestedFloor) {
         console.error('Please pick a floor between 1 and %d', this.floorCount);
     }
 
-    this.movingElevators.push({
-        elevator: elevator,
-        floor: requestedFloor
-    })
+    // In real life, this would need to be fancier since elevator is an object
+    var alreadyAdded = this.movingElevators.indexOf(elevator) > -1;
+
+    if (!alreadyAdded) {
+        this.movingElevators.push({
+            elevator: elevator,
+            floor: requestedFloor
+        })
+    }
 }
 
 ElevatorSimulation.prototype.removeElevator = function(elevator) {
