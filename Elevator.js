@@ -1,22 +1,19 @@
-var EventEmitter = require('events');
-var util = require('util');
-
+var emitter = new require('events').EventEmitter();
+var MAX_TRIPS = 100;
 
 function Elevator() {
-    this.currentFloor;
-    this.isMoving;
-    this.occupied;
-    this.tripCount;
+    this.currentFloor = 1;
+    this.isMoving = false;
+    this.occupied = false;
+    this.tripCount = 0;
     this.passedFloors;
     this.maintenanceMode;
-    EventEmitter.call(this);
 }
-util.inherits(Elevator, EventEmitter);
 
 Elevator.prototype.goTo = function(floor) {
     this.isMoving = true;
     this.destination = floor;
-    this.emit('moving', this, floor);
+    emitter.emit('moving', this, floor);
 }
 
 Elevator.prototype.stop = function(currentFloor) {
@@ -24,16 +21,22 @@ Elevator.prototype.stop = function(currentFloor) {
     if (currentFloor === this.destination) {
         this.isMoving = false;
         this.tripCount++;
+        if (this.tripCount > MAX_TRIPS) {
+            this.maintenanceMode = true;
+            emitter.emit('out-of-service', this);
+        }
+    } else {
+        this.goTo(this.destination);
     }
-    this.emit('stopped', this);
+    emitter.emit('stopped', this);
 }
 
 Elevator.prototype.isOpeningDoor = function() {
-    this.emit('is-opening-door', this);
+    emitter.emit('is-opening-door', this);
 }
 
 Elevator.prototype.isClosingDoor = function() {
-    this.emit('is-closing-door', this);
+    emitter.emit('is-closing-door', this);
 }
 
 
